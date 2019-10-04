@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using eQuantic.Core.Collections;
 using eQuantic.Core.CQS.Queries;
 
@@ -8,6 +9,6 @@ namespace eQuantic.Core.CQS
         where TQuery : IPagedQuery<TResult>
         where TResult : class
     {
-        Task<IPagedEnumerable<TResult>> Execute(TQuery query);
+        Task<IPagedEnumerable<TResult>> Execute(TQuery query, CancellationToken cancellationToken);
     }
 }

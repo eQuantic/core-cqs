@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using eQuantic.Core.Collections;
 using eQuantic.Core.CQS.Commands;
+using eQuantic.Core.CQS.Handlers;
 using eQuantic.Core.CQS.Queries;
 using eQuantic.Core.Ioc;
 
@@ -12,68 +15,74 @@ namespace eQuantic.Core.CQS
     public class Mediator : IMediator
     {
         private readonly IContainer container;
+        private static readonly ConcurrentDictionary<Type, object> _queryHandlers = new ConcurrentDictionary<Type, object>();
+        private static readonly ConcurrentDictionary<Type, object> _pagedQueryHandlers = new ConcurrentDictionary<Type, object>();
+        private static readonly ConcurrentDictionary<Type, object> _commandHandlers = new ConcurrentDictionary<Type, object>();
+        private static readonly ConcurrentDictionary<Type, object> _commandWithResultHandlers = new ConcurrentDictionary<Type, object>();
 
         public Mediator(IContainer container)
         {
             this.container = container ?? throw new ArgumentNullException(nameof(container));
         }
 
-        public Task<TResult> ExecuteAsync<TResult>(IQuery<TResult> query) where TResult : class
+        public Task<TResult> ExecuteAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken = default) where TResult : class
         {
             if (query is null)
             {
                 throw new ArgumentNullException(nameof(query));
             }
 
-            return null;
+            var queryType = query.GetType();
+
+            var handler = (QueryHandlerWrapper<TResult>)_queryHandlers.GetOrAdd(queryType,
+                t => Activator.CreateInstance(typeof(QueryHandlerWrapperImpl<,>).MakeGenericType(queryType, typeof(TResult))));
+
+            return handler.Execute(query, cancellationToken, this.container);
         }
 
-        public Task<IPagedEnumerable<TResult>> ExecuteAsync<TResult>(IPagedQuery<TResult> query) where TResult : class
+        public Task<IPagedEnumerable<TResult>> ExecuteAsync<TResult>(IPagedQuery<TResult> query, CancellationToken cancellationToken = default) where TResult : class
         {
             if (query is null)
             {
                 throw new ArgumentNullException(nameof(query));
             }
 
-            return null;
+            var queryType = query.GetType();
+
+            var handler = (PagedQueryHandlerWrapper<TResult>)_pagedQueryHandlers.GetOrAdd(queryType,
+                t => Activator.CreateInstance(typeof(PagedQueryHandlerWrapperImpl<,>).MakeGenericType(queryType, typeof(TResult))));
+
+            return handler.Execute(query, cancellationToken, this.container);
         }
 
-        public async Task ExecuteAsync(ICommand command)
+        public Task ExecuteAsync(ICommand command, CancellationToken cancellationToken = default)
         {
             if (command is null)
             {
                 throw new ArgumentNullException(nameof(command));
             }
 
-            var handlers = ResolveCommandHandler(command);
-            await Task.WhenAll(handlers.Select(h => h.Execute(command)));
+            var commandType = command.GetType();
+
+            var handler = (CommandHandlerWrapper)_commandHandlers.GetOrAdd(commandType,
+                t => Activator.CreateInstance(typeof(CommandHandlerWrapperImpl<>).MakeGenericType(commandType)));
+
+            return handler.Execute(command, cancellationToken, this.container);
         }
 
-        public async Task<TResult> ExecuteAsync<TResult>(ICommand<TResult> command)
+        public Task<TResult> ExecuteAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken = default)
         {
             if (command is null)
             {
                 throw new ArgumentNullException(nameof(command));
             }
 
-            var handlers = ResolveCommandHandler<ICommand<TResult>, TResult>(command);
-            return (await Task.WhenAll(handlers.Select(h => h.Execute(command)))).FirstOrDefault();
-        }
+            var commandType = command.GetType();
 
-        private IEnumerable<ICommandHandler<TCommand>> ResolveCommandHandler<TCommand>(TCommand command)
-                                    where TCommand : ICommand
-        {
-            var type = typeof(ICommandHandler<TCommand>);
-            return (IEnumerable<ICommandHandler<TCommand>>)this.container.ResolveAll(type);
-        }
+            var handler = (CommandHandlerWrapper<TResult>)_commandWithResultHandlers.GetOrAdd(commandType,
+                t => Activator.CreateInstance(typeof(CommandHandlerWrapperImpl<,>).MakeGenericType(commandType, typeof(TResult))));
 
-        private IEnumerable<ICommandHandler<TCommand, TResult>> ResolveCommandHandler<TCommand, TResult>(TCommand command)
-                                    where TCommand : ICommand<TResult>
-        {
-            var handlerType = typeof(ICommandHandler<,>);
-            var type = handlerType.MakeGenericType(command.GetType(), typeof(TResult));
-
-            return (IEnumerable<ICommandHandler<TCommand, TResult>>)this.container.ResolveAll(type);
+            return handler.Execute(command, cancellationToken, this.container);
         }
     }
 }
