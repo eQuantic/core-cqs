@@ -2,11 +2,13 @@
   Configurations: {
     "Debug": {
       BumpLabel: "dev",
-      LabelDigits: 4
+      LabelDigits: 4,
+      ResetLabel: "beta"
     },
     
     "Release": {
-      BumpRevision: true,
+      BumpLabel: "beta",
+      LabelDigits: 0,
       ResetLabel: "dev"
     }
   }
