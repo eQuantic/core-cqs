@@ -5,8 +5,9 @@
     <Description>eQuantic Core CQS Library</Description>
     <Copyright>2019</Copyright>
     <AssemblyTitle>eQuantic.Core.CQS</AssemblyTitle>
-    <Version>0.1.0-beta1</Version>
+    <Version>0.1.0-dev0003</Version>
     <VersionSuffix>-beta</VersionSuffix>
+    <LangVersion>latest</LangVersion>
     <Authors>eQuantic Systems</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>eQuantic.Core.CQS</AssemblyName>

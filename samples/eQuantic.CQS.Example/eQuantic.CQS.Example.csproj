@@ -5,6 +5,7 @@
     <AssemblyName>eQuantic.CQS.Example</AssemblyName>
     <PackageId>eQuantic.CQS.Example</PackageId>
     <OutputType>Exe</OutputType>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
