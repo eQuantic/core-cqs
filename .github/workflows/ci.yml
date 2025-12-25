@@ -46,16 +46,16 @@ jobs:
           echo "NuGetVersion: ${{ steps.gitversion.outputs.nuGetVersion }}"
 
       - name: Restore
-        run: dotnet restore src/eQuantic.Core.CQS.sln
+        run: dotnet restore eQuantic.Core.CQS.sln
 
       - name: Build
-        run: dotnet build src/eQuantic.Core.CQS.sln -c Release --no-restore /p:Version=${{ steps.gitversion.outputs.semVer }}
+        run: dotnet build eQuantic.Core.CQS.sln -c Release --no-restore /p:Version=${{ steps.gitversion.outputs.semVer }}
 
       - name: Test
-        run: dotnet test src/eQuantic.Core.CQS.sln -c Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+        run: dotnet test eQuantic.Core.CQS.sln -c Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
 
       - name: Pack
-        run: dotnet pack src/eQuantic.Core.CQS/eQuantic.Core.CQS.csproj -c Release --no-build -o ./artifacts /p:Version=${{ steps.gitversion.outputs.nuGetVersion }}
+        run: dotnet pack src/eQuantic.Core.CQS/eQuantic.Core.CQS.csproj -c Release -o ./artifacts /p:Version=${{ steps.gitversion.outputs.nuGetVersion }}
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
