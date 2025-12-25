@@ -5,8 +5,8 @@ assembly-file-versioning-scheme: MajorMinorPatch
 tag-prefix: v
 
 branches:
-  main:
-    regex: ^main$
+  master:
+    regex: ^master$
     mode: ContinuousDeployment
     tag: ""
     increment: Patch
