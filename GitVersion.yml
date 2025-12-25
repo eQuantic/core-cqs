@@ -1,25 +1,31 @@
-mode: ContinuousDeployment
+mode: Mainline
 next-version: 1.0.0
 tag-prefix: v
 
 branches:
   master:
+    mode: ContinuousDelivery
     is-mainline: true
     tag: ""
     increment: Patch
+    prevent-increment-of-merged-branch-version: true
   develop:
+    mode: ContinuousDeployment
     tag: alpha
     increment: Minor
   feature:
     regex: ^features?[/-]
+    mode: ContinuousDeployment
     tag: alpha.{BranchName}
     increment: Inherit
   release:
     regex: ^releases?[/-]
+    mode: ContinuousDeployment
     tag: rc
     increment: None
   hotfix:
     regex: ^hotfix(es)?[/-]
+    mode: ContinuousDeployment
     tag: beta
     increment: Patch
 
