@@ -4,7 +4,7 @@
 [![Build Status](https://github.com/eQuantic/core-cqs/workflows/CI%2FCD/badge.svg)](https://github.com/eQuantic/core-cqs/actions)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-A modern, high-performance CQS/CQRS framework for .NET with pipeline behaviors, notifications, streaming, and source generators. MIT-licensed alternative to MediatR.
+A modern, high-performance CQS/CQRS framework for .NET with pipeline behaviors, notifications, streaming, sagas, and distributed system support. MIT-licensed alternative to MediatR.
 
 ## Features
 
@@ -12,14 +12,45 @@ A modern, high-performance CQS/CQRS framework for .NET with pipeline behaviors, 
 - ✅ **Pipeline Behaviors** - Cross-cutting concerns (logging, validation, etc.)
 - ✅ **Notifications** - Publish-subscribe pattern with multiple handlers
 - ✅ **Streaming** - IAsyncEnumerable support for large datasets
+- ✅ **Sagas** - Multi-step transactions with compensation
+- ✅ **Outbox Pattern** - Reliable message publishing
+- ✅ **Job Scheduling** - Deferred command execution
 - ✅ **Paged Queries** - Built-in pagination support
-- ✅ **Pre/Post Processors** - Hook into request lifecycle
 - ✅ **Modern .NET** - Targets .NET 6, 8, and 9
+
+## Packages
+
+| Package                          | Description              | NuGet                                                                                                                                         |
+| -------------------------------- | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `eQuantic.Core.CQS`              | Core framework           | [![NuGet](https://img.shields.io/nuget/v/eQuantic.Core.CQS.svg)](https://www.nuget.org/packages/eQuantic.Core.CQS/)                           |
+| `eQuantic.Core.CQS.Abstractions` | Interfaces and contracts | [![NuGet](https://img.shields.io/nuget/v/eQuantic.Core.CQS.Abstractions.svg)](https://www.nuget.org/packages/eQuantic.Core.CQS.Abstractions/) |
+| `eQuantic.Core.CQS.Generators`   | Source generators        | [![NuGet](https://img.shields.io/nuget/v/eQuantic.Core.CQS.Generators.svg)](https://www.nuget.org/packages/eQuantic.Core.CQS.Generators/)     |
+
+### Persistence Providers
+
+| Package                             | Provider   | Features                               |
+| ----------------------------------- | ---------- | -------------------------------------- |
+| `eQuantic.Core.CQS.Redis`           | Redis      | Saga Repository, Outbox, Job Scheduler |
+| `eQuantic.Core.CQS.MongoDb`         | MongoDB    | Saga Repository, Outbox, Job Scheduler |
+| `eQuantic.Core.CQS.PostgreSql`      | PostgreSQL | Saga Repository, Outbox, Job Scheduler |
+| `eQuantic.Core.CQS.EntityFramework` | EF Core    | Saga Repository, Outbox, Job Scheduler |
+
+### Cloud Messaging
+
+| Package                   | Provider          | Features                       |
+| ------------------------- | ----------------- | ------------------------------ |
+| `eQuantic.Core.CQS.Azure` | Azure Service Bus | Outbox Publisher (Queue/Topic) |
+| `eQuantic.Core.CQS.AWS`   | Amazon SQS        | Outbox Publisher               |
 
 ## Installation
 
 ```bash
+# Core package
 dotnet add package eQuantic.Core.CQS
+
+# Optional: Provider packages
+dotnet add package eQuantic.Core.CQS.Redis
+dotnet add package eQuantic.Core.CQS.Azure
 ```
 
 ## Quick Start
@@ -27,11 +58,19 @@ dotnet add package eQuantic.Core.CQS
 ### 1. Register Services
 
 ```csharp
-builder.Services.AddCQS(options =>
-{
-    options.UsePreProcessor = true;
-    options.UsePostProcessor = true;
-}, typeof(Program).Assembly);
+// Basic setup
+services.AddCQS(options => options
+    .FromAssemblyContaining<Program>());
+
+// With providers
+services.AddCQS(options => options
+    .FromAssemblyContaining<Program>()
+    .UsePreProcessor = true;
+    .UseRedis(redis => redis.ConnectionString = "localhost:6379")
+    .UseAzureServiceBus(sb => {
+        sb.ConnectionString = "Endpoint=sb://...";
+        sb.QueueOrTopicName = "outbox";
+    }));
 ```
 
 ### 2. Define a Query
@@ -47,7 +86,6 @@ public class GetUserByIdHandler : IQueryHandler<GetUserByIdQuery, UserDto>
 {
     public async Task<UserDto> Execute(GetUserByIdQuery query, CancellationToken ct)
     {
-        // Your logic here
         return new UserDto(query.Id, "John Doe");
     }
 }
@@ -62,21 +100,23 @@ public class UsersController : ControllerBase
 
     [HttpGet("{id}")]
     public async Task<UserDto> Get(Guid id)
-    {
-        return await _mediator.ExecuteAsync(new GetUserByIdQuery(id));
-    }
+        => await _mediator.ExecuteAsync(new GetUserByIdQuery(id));
 }
 ```
 
 ## Advanced Features
 
-### Commands with Results
+### Commands
 
 ```csharp
+// Command without result
+public record DeleteUserCommand(Guid Id) : ICommand;
+
+// Command with result
 public record CreateUserCommand(string Name) : ICommand<Guid>;
 ```
 
-### Notifications
+### Notifications (Pub/Sub)
 
 ```csharp
 public record UserCreatedNotification(Guid UserId) : INotification;
@@ -89,7 +129,7 @@ public class SendWelcomeEmailHandler : INotificationHandler<UserCreatedNotificat
     }
 }
 
-// Publish
+// Publish to all handlers
 await _notificationPublisher.Publish(new UserCreatedNotification(userId));
 ```
 
@@ -98,12 +138,64 @@ await _notificationPublisher.Publish(new UserCreatedNotification(userId));
 ```csharp
 public record GetAllUsersStreamQuery : IStreamQuery<UserDto>;
 
-// Handler returns IAsyncEnumerable<UserDto>
-var users = _mediator.ExecuteStreamAsync(new GetAllUsersStreamQuery());
-await foreach (var user in users)
+await foreach (var user in _mediator.ExecuteStreamAsync(new GetAllUsersStreamQuery()))
 {
     Console.WriteLine(user.Name);
 }
+```
+
+### Sagas (Multi-step Transactions)
+
+```csharp
+public class OrderSaga : Saga<OrderSagaData>
+{
+    protected override void ConfigureSteps()
+    {
+        Step("ProcessPayment",
+            execute: async (data, ct) => { /* charge */ },
+            compensate: async (data, ct) => { /* refund */ });
+
+        Step("ReserveInventory",
+            execute: async (data, ct) => { /* reserve */ },
+            compensate: async (data, ct) => { /* release */ });
+
+        Step("Ship",
+            execute: async (data, ct) => { /* ship */ },
+            compensate: async (data, ct) => { /* cancel shipment */ });
+    }
+}
+
+// Execute - automatic compensation on failure
+var result = await saga.Execute(new OrderSagaData { OrderId = orderId });
+if (!result.IsSuccess)
+{
+    Console.WriteLine($"Saga failed: {result.Error?.Message}");
+}
+```
+
+### Azure Service Bus Integration
+
+```csharp
+services.AddCQSAzureServiceBus(options =>
+{
+    options.ConnectionString = "Endpoint=sb://...";
+    options.QueueOrTopicName = "outbox-messages";
+    options.UseTopic = false;
+});
+
+// Publish outbox messages
+await _outboxPublisher.PublishAsync(message);
+await _outboxPublisher.PublishBatchAsync(messages);
+```
+
+### AWS SQS Integration
+
+```csharp
+services.AddCQSAwsSqs(options =>
+{
+    options.QueueUrl = "https://sqs.us-east-1.amazonaws.com/123456789/my-queue";
+    options.Region = "us-east-1";
+});
 ```
 
 ### Pipeline Behaviors
@@ -126,6 +218,9 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
 | Feature            | eQuantic.Core.CQS   | MediatR          |
 | ------------------ | ------------------- | ---------------- |
 | License            | MIT ✅              | Commercial 💰    |
+| Sagas              | Built-in ✅         | ❌               |
+| Outbox Pattern     | Built-in ✅         | ❌               |
+| Cloud Messaging    | Azure/AWS ✅        | ❌               |
 | Paged Queries      | Built-in ✅         | Manual           |
 | Streaming          | IAsyncEnumerable ✅ | IAsyncEnumerable |
 | Notifications      | ✅                  | ✅               |

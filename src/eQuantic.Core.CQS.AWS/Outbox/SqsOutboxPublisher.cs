@@ -2,8 +2,9 @@ using System.Text.Json;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using eQuantic.Core.CQS.Abstractions.Outbox;
+using eQuantic.Core.CQS.AWS.Options;
 
-namespace eQuantic.Core.CQS.AWS;
+namespace eQuantic.Core.CQS.AWS.Outbox;
 
 // ============================================================
 // OPTIONS

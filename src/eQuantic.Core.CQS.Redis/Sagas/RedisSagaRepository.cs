@@ -17,7 +17,10 @@ public class RedisSagaRepository<TData>(IConnectionMultiplexer redis, RedisOptio
     public async Task Save(TData data, CancellationToken ct = default)
     {
         var json = JsonSerializer.Serialize(data, _json);
-        await _db.StringSetAsync(Key(data.SagaId), json, options.DefaultExpiration);
+        var key = Key(data.SagaId);
+        await _db.StringSetAsync(key, json);
+        if (options.DefaultExpiration.HasValue)
+            await _db.KeyExpireAsync(key, options.DefaultExpiration.Value);
         await _db.SetAddAsync(IndexKey, data.SagaId.ToString());
     }
 

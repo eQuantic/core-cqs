@@ -10,28 +10,48 @@
     <RootNamespace>eQuantic.Core.CQS.PostgreSql</RootNamespace>
     
     <PackageId>eQuantic.Core.CQS.PostgreSql</PackageId>
-    <Authors>eQuantic Systems</Authors>
-    <Company>eQuantic Systems</Company>
-    <Copyright>Copyright © eQuantic Systems 2019-2024</Copyright>
+    <Authors>eQuantic Tech</Authors>
+    <Company>eQuantic Tech</Company>
+    <Copyright>Copyright © eQuantic Tech 2019-2025</Copyright>
     <Description>PostgreSQL implementations for eQuantic.Core.CQS - Includes Saga Repository, Outbox, and Job Scheduler</Description>
     <PackageTags>cqs;cqrs;saga;outbox;scheduler;postgresql;sql</PackageTags>
     <PackageProjectUrl>https://github.com/eQuantic/core-cqs</PackageProjectUrl>
     <RepositoryUrl>https://github.com/eQuantic/core-cqs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>Icon.png</PackageIcon>
     
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>../../artifacts/</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="../../assets/Icon.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\eQuantic.Core.CQS.Abstractions\eQuantic.Core.CQS.Abstractions.csproj" />
   </ItemGroup>
 
   
-  <ItemGroup>
+  <!-- net6.0 dependencies -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Npgsql" Version="6.0.13" />
+    <PackageReference Include="Dapper" Version="2.1.66" />
+  </ItemGroup>
+
+  <!-- net8.0 dependencies -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
-    <PackageReference Include="Npgsql" Version="8.0.5" />
+    <PackageReference Include="Npgsql" Version="8.0.8" />
+    <PackageReference Include="Dapper" Version="2.1.66" />
+  </ItemGroup>
+
+  <!-- net9.0 dependencies -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.11" />
+    <PackageReference Include="Npgsql" Version="9.0.4" />
     <PackageReference Include="Dapper" Version="2.1.66" />
   </ItemGroup>
 

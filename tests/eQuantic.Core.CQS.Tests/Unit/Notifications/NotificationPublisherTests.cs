@@ -51,7 +51,7 @@ public class NotificationPublisherTests : IDisposable
         TestNotificationHandler2.ReceivedMessages.Clear();
 
         var services = new ServiceCollection();
-        services.AddCQS(null, typeof(NotificationPublisherTests).Assembly);
+        services.AddCQS(options => options.FromAssemblyContaining<NotificationPublisherTests>());
         _publisher = services.BuildServiceProvider().GetRequiredService<INotificationPublisher>();
     }
 

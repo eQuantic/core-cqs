@@ -88,7 +88,7 @@ public class CqsIntegrationTests : IDisposable
         UserCreatedEmailHandler.SentEmails.Clear();
 
         var services = new ServiceCollection();
-        services.AddCQS(null, typeof(CqsIntegrationTests).Assembly);
+        services.AddCQS(options => options.FromAssemblyContaining<CqsIntegrationTests>());
         services.AddSingleton<UserStore>();
         
         _provider = services.BuildServiceProvider();

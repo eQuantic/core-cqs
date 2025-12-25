@@ -12,11 +12,16 @@
 
         <!-- NuGet Package -->
         <PackageId>eQuantic.Core.CQS.Azure</PackageId>
-        <Authors>eQuantic Systems</Authors>
-        <Company>eQuantic Systems</Company>
+        <Authors>eQuantic Tech</Authors>
+        <Company>eQuantic Tech</Company>
+        <Copyright>Copyright © eQuantic Tech 2019-2025</Copyright>
         <Description>Azure Service Bus integration for eQuantic.Core.CQS Outbox pattern. Publish messages to Azure queues and topics.</Description>
         <PackageTags>cqs;cqrs;outbox;azure;servicebus;messaging</PackageTags>
+        <PackageProjectUrl>https://github.com/eQuantic/core-cqs</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/eQuantic/core-cqs</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageIcon>Icon.png</PackageIcon>
 
         <!-- Build -->
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -30,9 +35,29 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <None Include="../../assets/Icon.png" Pack="true" PackagePath="" />
+    </ItemGroup>
+
+
+    <!-- Common packages -->
+    <ItemGroup>
         <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.1" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+    </ItemGroup>
+
+    <!-- net6.0 dependencies -->
+    <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+    </ItemGroup>
+
+    <!-- net8.0 dependencies -->
+    <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+    </ItemGroup>
+
+    <!-- net9.0 dependencies -->
+    <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.11" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,6 +1,6 @@
 using eQuantic.Core.CQS.Abstractions.Outbox;
 
-namespace eQuantic.Core.CQS.AWS;
+namespace eQuantic.Core.CQS.AWS.Outbox;
 
 /// <summary>
 /// Publishes outbox messages to AWS SQS

@@ -1,8 +1,9 @@
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 using eQuantic.Core.CQS.Abstractions.Outbox;
+using eQuantic.Core.CQS.Azure.Options;
 
-namespace eQuantic.Core.CQS.Azure;
+namespace eQuantic.Core.CQS.Azure.Outbox;
 
 // ============================================================
 // OPTIONS
@@ -15,18 +16,14 @@ namespace eQuantic.Core.CQS.Azure;
 /// <summary>
 /// Azure Service Bus implementation of IOutboxPublisher
 /// </summary>
-public sealed class ServiceBusOutboxPublisher : IOutboxPublisher, IAsyncDisposable
+public sealed class ServiceBusOutboxPublisher(ServiceBusClient client, ServiceBusOptions options)
+    : IOutboxPublisher, IAsyncDisposable
 {
-    private readonly ServiceBusSender _sender;
+    private readonly ServiceBusSender _sender = client.CreateSender(options.QueueOrTopicName);
     private readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
-
-    public ServiceBusOutboxPublisher(ServiceBusClient client, ServiceBusOptions options)
-    {
-        _sender = client.CreateSender(options.QueueOrTopicName);
-    }
 
     public async Task PublishAsync(IOutboxMessage message, CancellationToken ct = default)
     {

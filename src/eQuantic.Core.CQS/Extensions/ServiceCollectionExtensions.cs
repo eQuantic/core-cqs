@@ -2,6 +2,7 @@ using System.Reflection;
 using eQuantic.Core.CQS.Abstractions;
 using eQuantic.Core.CQS.Abstractions.Handlers;
 using eQuantic.Core.CQS.Abstractions.Notifications;
+using eQuantic.Core.CQS.Abstractions.Options;
 using eQuantic.Core.CQS.Abstractions.Streaming;
 using eQuantic.Core.CQS.Handlers;
 using eQuantic.Core.CQS.Notifications;
@@ -18,26 +19,32 @@ namespace eQuantic.Core.CQS.Extensions;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds CQS services to the service collection
+    /// Adds CQS services to the service collection using fluent configuration
     /// </summary>
     /// <param name="services">The service collection</param>
-    /// <param name="configure">Optional configuration action</param>
-    /// <param name="assemblies">Assemblies to scan for handlers. If empty, scans the calling assembly.</param>
+    /// <param name="configure">Configuration action with fluent API</param>
     /// <returns>The service collection for chaining</returns>
+    /// <example>
+    /// <code>
+    /// services.AddCQS(options => options
+    ///     .FromAssemblyContaining&lt;Program&gt;()
+    ///     .UseRedis(redis => redis.ConnectionString = "...")
+    ///     .UseAzureServiceBus(sb => sb.ConnectionString = "..."));
+    /// </code>
+    /// </example>
     public static IServiceCollection AddCQS(
         this IServiceCollection services,
-        Action<CQSOptions>? configure = null,
-        params Assembly[] assemblies)
+        Action<CQSOptions> configure)
     {
-        var options = new CQSOptions();
-        configure?.Invoke(options);
+        var options = new CQSOptions { Services = services };
+        configure(options);
 
         services.TryAddSingleton(options);
         services.TryAddScoped<IMediator, Mediator>();
         services.TryAddScoped<INotificationPublisher, NotificationPublisher>();
 
-        var assembliesToScan = assemblies.Length > 0 
-            ? assemblies 
+        var assembliesToScan = options.Assemblies.Count > 0 
+            ? options.Assemblies.ToArray() 
             : new[] { Assembly.GetCallingAssembly() };
 
         RegisterHandlers(services, assembliesToScan);
@@ -87,7 +94,7 @@ public static class ServiceCollectionExtensions
 
                 foreach (var @interface in interfaces)
                 {
-                    // Notifications can have multiple handlers, so use AddTransient instead of TryAddTransient
+                    // Notifications can have multiple handlers
                     services.AddTransient(@interface, type);
                 }
             }
@@ -116,7 +123,6 @@ public static class ServiceCollectionExtensions
         Assembly[] assemblies, 
         CQSOptions options)
     {
-        // Register built-in behaviors if enabled
         if (options.UsePreProcessor)
         {
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PreProcessorBehavior<,>));
@@ -127,7 +133,6 @@ public static class ServiceCollectionExtensions
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PostProcessorBehavior<,>));
         }
 
-        // Scan for custom pipeline behaviors
         foreach (var assembly in assemblies)
         {
             foreach (var type in assembly.GetTypes().Where(t => t is { IsClass: true, IsAbstract: false }))
@@ -144,20 +149,4 @@ public static class ServiceCollectionExtensions
             }
         }
     }
-}
-
-/// <summary>
-/// Configuration options for CQS
-/// </summary>
-public class CQSOptions
-{
-    /// <summary>
-    /// Whether to use the built-in pre-processor behavior
-    /// </summary>
-    public bool UsePreProcessor { get; set; } = false;
-
-    /// <summary>
-    /// Whether to use the built-in post-processor behavior
-    /// </summary>
-    public bool UsePostProcessor { get; set; } = false;
 }

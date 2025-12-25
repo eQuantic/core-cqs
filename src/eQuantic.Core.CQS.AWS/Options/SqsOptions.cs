@@ -1,4 +1,4 @@
-namespace eQuantic.Core.CQS.AWS;
+namespace eQuantic.Core.CQS.AWS.Options;
 
 /// <summary>
 /// AWS SQS configuration options

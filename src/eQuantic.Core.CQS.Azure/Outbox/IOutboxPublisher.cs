@@ -1,6 +1,6 @@
 using eQuantic.Core.CQS.Abstractions.Outbox;
 
-namespace eQuantic.Core.CQS.Azure;
+namespace eQuantic.Core.CQS.Azure.Outbox;
 
 /// <summary>
 /// Publishes outbox messages to Azure Service Bus

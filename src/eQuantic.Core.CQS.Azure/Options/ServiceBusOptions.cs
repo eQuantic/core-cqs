@@ -1,4 +1,4 @@
-namespace eQuantic.Core.CQS.Azure;
+namespace eQuantic.Core.CQS.Azure.Options;
 
 /// <summary>
 /// Azure Service Bus configuration options

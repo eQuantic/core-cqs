@@ -16,7 +16,10 @@ public class RedisOutboxRepository(IConnectionMultiplexer redis, RedisOptions op
     public async Task Add(IOutboxMessage msg, CancellationToken ct = default)
     {
         var json = JsonSerializer.Serialize(msg, _json);
-        await _db.StringSetAsync(Key(msg.Id), json, options.DefaultExpiration);
+        var key = Key(msg.Id);
+        await _db.StringSetAsync(key, json);
+        if (options.DefaultExpiration.HasValue)
+            await _db.KeyExpireAsync(key, options.DefaultExpiration.Value);
         await _db.SortedSetAddAsync(PendingKey, msg.Id.ToString(), msg.CreatedAt.Ticks);
     }
 

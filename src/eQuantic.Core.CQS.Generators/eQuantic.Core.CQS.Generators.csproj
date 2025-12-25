@@ -17,15 +17,16 @@
     
     <!-- NuGet Package -->
     <PackageId>eQuantic.Core.CQS.Generators</PackageId>
-    <Authors>eQuantic Systems</Authors>
-    <Company>eQuantic Systems</Company>
-    <Copyright>Copyright © eQuantic Systems 2019-2024</Copyright>
+    <Authors>eQuantic Tech</Authors>
+    <Company>eQuantic Tech</Company>
+    <Copyright>Copyright © eQuantic Tech 2019-2025</Copyright>
     <Description>Source generators for eQuantic.Core.CQS - Auto-registration of handlers and compile-time validation</Description>
     <PackageTags>cqs;cqrs;mediator;source-generator;roslyn;dotnet</PackageTags>
     <PackageProjectUrl>https://github.com/eQuantic/core-cqs</PackageProjectUrl>
     <RepositoryUrl>https://github.com/eQuantic/core-cqs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>Icon.png</PackageIcon>
     
     <!-- Build -->
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -37,8 +38,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="../../assets/Icon.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

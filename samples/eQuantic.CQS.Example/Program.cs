@@ -21,8 +21,8 @@ class Program
 
         var services = new ServiceCollection();
         
-        // Register CQS services
-        services.AddCQS(null, typeof(Program).Assembly);
+        // Register CQS services using fluent API
+        services.AddCQS(options => options.FromAssemblyContaining<Program>());
         
         // Register services
         services.AddSingleton<TextWriter>(Console.Out);

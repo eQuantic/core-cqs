@@ -18,7 +18,7 @@ public class MediatorCommandTests
     public MediatorCommandTests()
     {
         var services = new ServiceCollection();
-        services.AddCQS(null, typeof(TestCommand).Assembly);
+        services.AddCQS(options => options.FromAssemblyContaining<TestCommand>());
         _provider = services.BuildServiceProvider();
         _mediator = _provider.GetRequiredService<IMediator>();
     }
@@ -83,7 +83,7 @@ public class MediatorQueryTests
     public MediatorQueryTests()
     {
         var services = new ServiceCollection();
-        services.AddCQS(null, typeof(TestCommand).Assembly);
+        services.AddCQS(options => options.FromAssemblyContaining<TestCommand>());
         _mediator = services.BuildServiceProvider().GetRequiredService<IMediator>();
     }
 

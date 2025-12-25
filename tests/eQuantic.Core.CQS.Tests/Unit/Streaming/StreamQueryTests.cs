@@ -38,7 +38,7 @@ public class StreamQueryTests
     public StreamQueryTests()
     {
         var services = new ServiceCollection();
-        services.AddCQS(null, typeof(StreamQueryTests).Assembly);
+        services.AddCQS(options => options.FromAssemblyContaining<StreamQueryTests>());
         _mediator = services.BuildServiceProvider().GetRequiredService<IMediator>();
     }
 
