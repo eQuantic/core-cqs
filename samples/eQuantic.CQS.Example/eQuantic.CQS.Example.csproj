@@ -1,10 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
     <AssemblyName>eQuantic.CQS.Example</AssemblyName>
     <PackageId>eQuantic.CQS.Example</PackageId>
-    <OutputType>Exe</OutputType>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -13,8 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lamar" Version="3.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
   </ItemGroup>
-
 
 </Project>

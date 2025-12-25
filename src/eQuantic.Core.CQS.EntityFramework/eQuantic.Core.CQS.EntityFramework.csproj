@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net6.0;net8.0;net9.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    
+    <AssemblyName>eQuantic.Core.CQS.EntityFramework</AssemblyName>
+    <RootNamespace>eQuantic.Core.CQS.EntityFramework</RootNamespace>
+    
+    <PackageId>eQuantic.Core.CQS.EntityFramework</PackageId>
+    <Authors>eQuantic Systems</Authors>
+    <Company>eQuantic Systems</Company>
+    <Copyright>Copyright © eQuantic Systems 2019-2024</Copyright>
+    <Description>Entity Framework Core implementations for eQuantic.Core.CQS - Includes Saga Repository, Outbox, and Job Scheduler using your existing DbContext</Description>
+    <PackageTags>cqs;cqrs;saga;outbox;scheduler;entityframework;efcore;sql</PackageTags>
+    <PackageProjectUrl>https://github.com/eQuantic/core-cqs</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/eQuantic/core-cqs</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageOutputPath>../../artifacts/</PackageOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\eQuantic.Core.CQS.Abstractions\eQuantic.Core.CQS.Abstractions.csproj" />
+  </ItemGroup>
+
+  <!-- EF Core version per target framework -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.35" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.11" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.0" />
+  </ItemGroup>
+
+</Project>

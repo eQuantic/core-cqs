@@ -1,40 +1,42 @@
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using eQuantic.Core.Collections;
-using eQuantic.Core.CQS.Extensions;
-using eQuantic.Core.CQS.Queries;
-using eQuantic.Core.Ioc;
+using eQuantic.Core.CQS.Abstractions;
+using eQuantic.Core.CQS.Abstractions.Handlers;
+using eQuantic.Core.CQS.Abstractions.Queries;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace eQuantic.Core.CQS.Handlers
+namespace eQuantic.Core.CQS.Handlers;
+
+/// <summary>
+/// Wrapper for paged query handlers
+/// </summary>
+internal abstract class PagedQueryHandlerWrapper<TResult> : HandlerWithResultBase
+    where TResult : class
 {
-    internal abstract class PagedQueryHandlerWrapper<TResult> : HandlerWithResultBase
+    public abstract Task<IPagedEnumerable<TResult>> Execute(IPagedQuery<TResult> query, CancellationToken cancellationToken, IServiceProvider serviceProvider);
+}
+
+/// <summary>
+/// Implementation of paged query handler wrapper
+/// </summary>
+internal class PagedQueryHandlerWrapperImpl<TQuery, TResult> : PagedQueryHandlerWrapper<TResult>
+    where TQuery : IPagedQuery<TResult>
+    where TResult : class
+{
+    public override async Task<object?> Execute(object request, CancellationToken cancellationToken, IServiceProvider serviceProvider)
     {
-        public abstract Task<IPagedEnumerable<TResult>> Execute(IPagedQuery<TResult> query, CancellationToken cancellationToken,
-            IContainer container);
+        return await Execute((IPagedQuery<TResult>)request, cancellationToken, serviceProvider);
     }
 
-    internal class PagedQueryHandlerWrapperImpl<TQuery, TResult> : PagedQueryHandlerWrapper<TResult>
-        where TQuery : IPagedQuery<TResult>
-        where TResult : class
+    public override Task<IPagedEnumerable<TResult>> Execute(IPagedQuery<TResult> query, CancellationToken cancellationToken, IServiceProvider serviceProvider)
     {
-        public override Task<object> Execute(object query, CancellationToken cancellationToken,
-            IContainer container)
-        {
-            return Execute((IPagedQuery<TResult>)query, cancellationToken, container)
-                .ContinueWith(t => (object) t.Result);
-        }
+        var handler = serviceProvider.GetRequiredService<IPagedQueryHandler<TQuery, TResult>>();
+        
+        Task<IPagedEnumerable<TResult>> Handler() => handler.Execute((TQuery)query, cancellationToken);
 
-        public override Task<IPagedEnumerable<TResult>> Execute(IPagedQuery<TResult> query, CancellationToken cancellationToken,
-            IContainer container)
-        {
-            Task<IPagedEnumerable<TResult>> Handler() => container.ResolveHandler<IPagedQueryHandler<TQuery, TResult>>().Execute((TQuery) query, cancellationToken);
-
-            return container
-                .ResolveAll<IPipelineBehavior<TQuery, IPagedEnumerable<TResult>>>()
-                .Reverse()
-                .Aggregate((HandlerDelegate<IPagedEnumerable<TResult>>) Handler, (next, pipeline) => () => pipeline.Execute((TQuery)query, cancellationToken, next))();
-        }
+        var behaviors = serviceProvider.GetServices<IPipelineBehavior<TQuery, IPagedEnumerable<TResult>>>().Reverse();
+        
+        return behaviors.Aggregate(
+            (HandlerDelegate<IPagedEnumerable<TResult>>)Handler,
+            (next, pipeline) => () => pipeline.Execute((TQuery)query, cancellationToken, next))();
     }
 }

@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net6.0;net8.0;net9.0</TargetFrameworks>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
+
+        <!-- Assembly Info -->
+        <AssemblyName>eQuantic.Core.CQS.Abstractions</AssemblyName>
+        <RootNamespace>eQuantic.Core.CQS.Abstractions</RootNamespace>
+
+        <!-- Build -->
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageOutputPath>../../artifacts/</PackageOutputPath>
+
+        <!-- Source Link -->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="eQuantic.Core" Version="1.8.0"/>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+    </ItemGroup>
+</Project>

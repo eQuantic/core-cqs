@@ -1,39 +1,41 @@
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using eQuantic.Core.CQS.Extensions;
-using eQuantic.Core.CQS.Queries;
-using eQuantic.Core.Ioc;
+using eQuantic.Core.CQS.Abstractions;
+using eQuantic.Core.CQS.Abstractions.Handlers;
+using eQuantic.Core.CQS.Abstractions.Queries;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace eQuantic.Core.CQS.Handlers
+namespace eQuantic.Core.CQS.Handlers;
+
+/// <summary>
+/// Wrapper for query handlers
+/// </summary>
+internal abstract class QueryHandlerWrapper<TResult> : HandlerWithResultBase
+    where TResult : class
 {
-    internal abstract class QueryHandlerWrapper<TResult> : HandlerWithResultBase
+    public abstract Task<TResult> Execute(IQuery<TResult> query, CancellationToken cancellationToken, IServiceProvider serviceProvider);
+}
+
+/// <summary>
+/// Implementation of query handler wrapper
+/// </summary>
+internal class QueryHandlerWrapperImpl<TQuery, TResult> : QueryHandlerWrapper<TResult>
+    where TQuery : IQuery<TResult>
+    where TResult : class
+{
+    public override async Task<object?> Execute(object request, CancellationToken cancellationToken, IServiceProvider serviceProvider)
     {
-        public abstract Task<TResult> Execute(IQuery<TResult> query, CancellationToken cancellationToken,
-            IContainer container);
+        return await Execute((IQuery<TResult>)request, cancellationToken, serviceProvider);
     }
 
-    internal class QueryHandlerWrapperImpl<TQuery, TResult> : QueryHandlerWrapper<TResult>
-        where TQuery : IQuery<TResult>
-        where TResult : class
+    public override Task<TResult> Execute(IQuery<TResult> query, CancellationToken cancellationToken, IServiceProvider serviceProvider)
     {
-        public override Task<object> Execute(object query, CancellationToken cancellationToken,
-            IContainer container)
-        {
-            return Execute((IQuery<TResult>)query, cancellationToken, container)
-                .ContinueWith(t => (object) t.Result);
-        }
+        var handler = serviceProvider.GetRequiredService<IQueryHandler<TQuery, TResult>>();
+        
+        Task<TResult> Handler() => handler.Execute((TQuery)query, cancellationToken);
 
-        public override Task<TResult> Execute(IQuery<TResult> query, CancellationToken cancellationToken,
-            IContainer container)
-        {
-            Task<TResult> Handler() => container.ResolveHandler<IQueryHandler<TQuery, TResult>>().Execute((TQuery) query, cancellationToken);
-
-            return container
-                .ResolveAll<IPipelineBehavior<TQuery, TResult>>()
-                .Reverse()
-                .Aggregate((HandlerDelegate<TResult>) Handler, (next, pipeline) => () => pipeline.Execute((TQuery)query, cancellationToken, next))();
-        }
+        var behaviors = serviceProvider.GetServices<IPipelineBehavior<TQuery, TResult>>().Reverse();
+        
+        return behaviors.Aggregate(
+            (HandlerDelegate<TResult>)Handler,
+            (next, pipeline) => () => pipeline.Execute((TQuery)query, cancellationToken, next))();
     }
 }

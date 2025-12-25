@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net6.0;net8.0;net9.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    
+    <AssemblyName>eQuantic.Core.CQS.MongoDb</AssemblyName>
+    <RootNamespace>eQuantic.Core.CQS.MongoDb</RootNamespace>
+    
+    <PackageId>eQuantic.Core.CQS.MongoDb</PackageId>
+    <Authors>eQuantic Systems</Authors>
+    <Company>eQuantic Systems</Company>
+    <Copyright>Copyright © eQuantic Systems 2019-2024</Copyright>
+    <Description>MongoDB implementations for eQuantic.Core.CQS - Includes Saga Repository, Outbox, and Job Scheduler</Description>
+    <PackageTags>cqs;cqrs;saga;outbox;scheduler;mongodb;nosql</PackageTags>
+    <PackageProjectUrl>https://github.com/eQuantic/core-cqs</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/eQuantic/core-cqs</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageOutputPath>../../artifacts/</PackageOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\eQuantic.Core.CQS.Abstractions\eQuantic.Core.CQS.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+    <PackageReference Include="MongoDB.Driver" Version="2.29.0" />
+  </ItemGroup>
+
+</Project>

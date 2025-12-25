@@ -2,38 +2,52 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>eQuantic Core CQS Library</Description>
-    <Copyright>2019</Copyright>
-    <AssemblyTitle>eQuantic.Core.CQS</AssemblyTitle>
-    <Version>0.1.0-dev0003</Version>
-    <VersionSuffix>-beta</VersionSuffix>
+    <TargetFrameworks>net6.0;net8.0;net9.0</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
-    <Authors>eQuantic Systems</Authors>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    
+    <!-- Assembly Info -->
     <AssemblyName>eQuantic.Core.CQS</AssemblyName>
+    <RootNamespace>eQuantic.Core.CQS</RootNamespace>
+    
+    <!-- NuGet Package -->
     <PackageId>eQuantic.Core.CQS</PackageId>
-    <PackageTags>eQuantic;Core;CQS;Library</PackageTags>
-    <PackageReleaseNotes>Design for Command Query Separation (CQS) pattern</PackageReleaseNotes>
+    <Authors>eQuantic Systems</Authors>
+    <Company>eQuantic Systems</Company>
+    <Copyright>Copyright © eQuantic Systems 2019-2024</Copyright>
+    <Description>High-performance CQS/CQRS framework for .NET with pipeline behaviors, notifications, streaming, sagas, and source generators. A modern, MIT-licensed alternative to MediatR.</Description>
+    <PackageTags>cqs;cqrs;mediator;commands;queries;pipeline;notifications;sagas;dotnet</PackageTags>
     <PackageProjectUrl>https://github.com/eQuantic/core-cqs</PackageProjectUrl>
-    <PackageOutputPath>../../artifacts/</PackageOutputPath>
-    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
-    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/eQuantic/core-cqs/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/eQuantic/core-cqs</RepositoryUrl>
-    <RepositoryType>Git</RepositoryType>
-    <AssemblyVersion>0.1.0.0</AssemblyVersion>
-    <FileVersion>0.1.0.0</FileVersion>
-    <PackageIconUrl>https://raw.githubusercontent.com/eQuantic/core-cqs/master/src/eQuantic.Core.CQS/Icon.png</PackageIconUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>Icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    
+    <!-- Build -->
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageOutputPath>../../artifacts/</PackageOutputPath>
+    
+    <!-- Source Link -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="eQuantic.Core" Version="1.4.10.4" />
-    <PackageReference Include="MSBump" Version="2.3.2" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Icon.png" Pack="true" PackagePath="" />
+    <None Include="../../README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\eQuantic.Core.CQS.Abstractions\eQuantic.Core.CQS.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

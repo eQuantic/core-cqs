@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net6.0;net8.0;net9.0</TargetFrameworks>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
+
+        <!-- Assembly Info -->
+        <AssemblyName>eQuantic.Core.CQS.Azure</AssemblyName>
+        <RootNamespace>eQuantic.Core.CQS.Azure</RootNamespace>
+
+        <!-- NuGet Package -->
+        <PackageId>eQuantic.Core.CQS.Azure</PackageId>
+        <Authors>eQuantic Systems</Authors>
+        <Company>eQuantic Systems</Company>
+        <Description>Azure Service Bus integration for eQuantic.Core.CQS Outbox pattern. Publish messages to Azure queues and topics.</Description>
+        <PackageTags>cqs;cqrs;outbox;azure;servicebus;messaging</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+        <!-- Build -->
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageOutputPath>../../artifacts/</PackageOutputPath>
+
+        <!-- Source Link -->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.1" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\eQuantic.Core.CQS.Abstractions\eQuantic.Core.CQS.Abstractions.csproj" />
+    </ItemGroup>
+
+</Project>
