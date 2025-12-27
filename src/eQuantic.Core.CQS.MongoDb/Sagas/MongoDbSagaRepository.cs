@@ -13,8 +13,23 @@ public class MongoDbSagaRepository<TData> : ISagaRepository<TData> where TData :
     {
         var db = client.GetDatabase(options.DatabaseName);
         _collection = db.GetCollection<TData>($"{options.CollectionPrefix}saga_{typeof(TData).Name.ToLowerInvariant()}");
-        _collection.Indexes.CreateOne(new CreateIndexModel<TData>(
-            Builders<TData>.IndexKeys.Ascending(x => x.SagaId), new CreateIndexOptions { Unique = true }));
+        
+        // Create unique index on SagaId - skip if SagaId is already the _id field
+        // or if index already exists with different options
+        try
+        {
+            _collection.Indexes.CreateOne(new CreateIndexModel<TData>(
+                Builders<TData>.IndexKeys.Ascending(x => x.SagaId), 
+                new CreateIndexOptions { Unique = true, Name = "saga_id_unique" }));
+        }
+        catch (MongoCommandException ex) when (
+            ex.CodeName == "IndexOptionsConflict" || 
+            ex.CodeName == "CannotCreateIndex" ||
+            ex.Code == 67 ||  // CannotCreateIndex - SagaId is _id
+            ex.Code == 85)    // IndexOptionsConflict
+        {
+            // Index cannot be created or already exists, ignore
+        }
     }
 
     public async Task Save(TData data, CancellationToken ct = default) =>

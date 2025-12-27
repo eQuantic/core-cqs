@@ -27,6 +27,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>Icon.png</PackageIcon>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     
     <!-- Build -->
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -39,6 +40,7 @@
 
   <ItemGroup>
     <None Include="../../assets/Icon.png" Pack="true" PackagePath="" />
+        <None Include="README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
 
