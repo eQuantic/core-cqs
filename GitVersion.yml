@@ -1,5 +1,4 @@
 mode: Mainline
-next-version: 1.0.0
 tag-prefix: v
 
 branches:
@@ -8,7 +7,6 @@ branches:
     is-mainline: true
     tag: ""
     increment: Patch
-    prevent-increment-of-merged-branch-version: true
   develop:
     mode: ContinuousDeployment
     tag: alpha
