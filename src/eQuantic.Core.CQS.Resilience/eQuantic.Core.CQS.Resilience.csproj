@@ -9,13 +9,13 @@
     <PackageId>eQuantic.Core.CQS.Resilience</PackageId>
     <Title>eQuantic CQS Resilience</Title>
     <Description>Resilience features for eQuantic CQS. Provides saga timeout monitoring, compensation handling, and dead letter queue support.</Description>
-    <Authors>eQuantic Systems</Authors>
-    <Company>eQuantic Systems</Company>
+    <Authors>eQuantic Tech</Authors>
+    <Company>eQuantic Tech</Company>
     <PackageTags>cqs;cqrs;resilience;saga;timeout;compensation;dead-letter;retry</PackageTags>
     <RepositoryUrl>https://github.com/eQuantic/core-cqs</RepositoryUrl>
     <PackageProjectUrl>https://github.com/eQuantic/core-cqs</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <Copyright>Copyright © eQuantic Systems 2025</Copyright>
+    <Copyright>Copyright © eQuantic Tech 2025</Copyright>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>Icon.png</PackageIcon>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

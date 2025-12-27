@@ -42,6 +42,23 @@ A modern, high-performance CQS/CQRS framework for .NET with pipeline behaviors, 
 | `eQuantic.Core.CQS.Azure` | Azure Service Bus | Outbox Publisher (Queue/Topic) |
 | `eQuantic.Core.CQS.AWS`   | Amazon SQS        | Outbox Publisher               |
 
+### Telemetry Providers
+
+| Package                                 | Provider           | Features                     |
+| --------------------------------------- | ------------------ | ---------------------------- |
+| `eQuantic.Core.CQS.OpenTelemetry`       | OpenTelemetry      | Distributed tracing, metrics |
+| `eQuantic.Core.CQS.ApplicationInsights` | Azure App Insights | Distributed tracing, metrics |
+| `eQuantic.Core.CQS.Datadog`             | Datadog APM        | Distributed tracing          |
+
+### Resilience Providers
+
+| Package                                   | Provider          | Features                   |
+| ----------------------------------------- | ----------------- | -------------------------- |
+| `eQuantic.Core.CQS.Resilience`            | Default           | Saga timeout, compensation |
+| `eQuantic.Core.CQS.Polly`                 | Polly             | Retry, circuit breaker     |
+| `eQuantic.Core.CQS.Resilience.Redis`      | Redis             | Dead letter queue          |
+| `eQuantic.Core.CQS.Resilience.ServiceBus` | Azure Service Bus | Dead letter queue          |
+
 ## Installation
 
 ```bash

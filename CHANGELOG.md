@@ -14,18 +14,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`eQuantic.Core.CQS.OpenTelemetry`** - OpenTelemetry integration for distributed tracing:
 
   - `ICqsTelemetry` abstraction with `NullCqsTelemetry` null object pattern
-  - `TracingCommandHandlerDecorator` - traces command execution
-  - `TracingQueryHandlerDecorator` - traces query execution
-  - `TracingSagaRepositoryDecorator` - traces saga operations
-  - `TracingOutboxPublisherDecorator` - traces outbox publishing
+  - Tracing decorators for commands, queries, sagas, and outbox
   - Fluent configuration via `UseOpenTelemetry()`
 
 - **`eQuantic.Core.CQS.Resilience`** - Saga timeout and compensation handling:
+
   - `ISagaTimeoutPolicy` / `DefaultSagaTimeoutPolicy`
   - `ICompensationHandler<T>` with delegate-based and class-based options
-  - `IDeadLetterHandler` / `LoggingDeadLetterHandler`
-  - `SagaTimeoutBackgroundService` - monitors and handles saga timeouts
-  - Fluent configuration via `UseResilience()`, `WithCompensation<>()`, `WithDeadLetterHandler<>()`
+  - `SagaTimeoutBackgroundService` for monitoring
+  - Fluent configuration via `UseResilience()`, `WithCompensation<>()`
+
+- **`eQuantic.Core.CQS.ApplicationInsights`** - Azure Application Insights telemetry provider:
+
+  - `ApplicationInsightsTelemetryAdapter` implementing `ICqsTelemetry`
+  - Distributed tracing and metrics integration
+  - Fluent configuration via `UseApplicationInsights()`
+
+- **`eQuantic.Core.CQS.Datadog`** - Datadog APM telemetry provider:
+
+  - `DatadogTelemetryAdapter` implementing `ICqsTelemetry`
+  - Distributed tracing with Datadog Trace SDK
+  - Fluent configuration via `UseDatadog()`
+
+- **`eQuantic.Core.CQS.Polly`** - Polly resilience integration:
+
+  - `PollyRetryBehavior` for retry with exponential backoff
+  - `PollySagaTimeoutPolicy` for saga timeout management
+  - Fluent configuration via `UsePolly()`, `UsePollyTimeout()`
+
+- **`eQuantic.Core.CQS.Resilience.Redis`** - Redis dead letter handler:
+
+  - `RedisDeadLetterHandler` stores failed sagas in Redis list
+  - Configurable key prefix and expiry
+  - Fluent configuration via `UseRedisDeadLetter()`
+
+- **`eQuantic.Core.CQS.Resilience.ServiceBus`** - Azure Service Bus dead letter handler:
+  - `ServiceBusDeadLetterHandler` sends failed sagas to queue
+  - Message properties with saga metadata
+  - Fluent configuration via `UseServiceBusDeadLetter()`
 
 #### Abstractions
 

@@ -6,12 +6,12 @@
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
 
-    <PackageId>eQuantic.Core.CQS.OpenTelemetry</PackageId>
-    <Title>eQuantic CQS OpenTelemetry</Title>
-    <Description>OpenTelemetry integration for eQuantic CQS. Provides distributed tracing and metrics for commands, queries, sagas, and outbox operations.</Description>
+    <PackageId>eQuantic.Core.CQS.ApplicationInsights</PackageId>
+    <Title>eQuantic CQS Application Insights</Title>
+    <Description>Azure Application Insights telemetry provider for eQuantic CQS. Provides distributed tracing and metrics using Application Insights SDK.</Description>
     <Authors>eQuantic Tech</Authors>
     <Company>eQuantic Tech</Company>
-    <PackageTags>cqs;cqrs;opentelemetry;tracing;observability;metrics;distributed-tracing</PackageTags>
+    <PackageTags>cqs;cqrs;telemetry;application-insights;azure;tracing;metrics</PackageTags>
     <RepositoryUrl>https://github.com/eQuantic/core-cqs</RepositoryUrl>
     <PackageProjectUrl>https://github.com/eQuantic/core-cqs</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
@@ -23,19 +23,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenTelemetry.Api" Version="1.11.2" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.11" />
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.22.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\eQuantic.Core.CQS.Abstractions\eQuantic.Core.CQS.Abstractions.csproj" />
-    <ProjectReference Include="..\eQuantic.Core.CQS\eQuantic.Core.CQS.csproj" />
   </ItemGroup>
 
   <ItemGroup>
