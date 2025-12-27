@@ -1,4 +1,5 @@
 using eQuantic.Core.CQS.Abstractions;
+using eQuantic.Core.CQS.Abstractions.Resilience;
 
 namespace eQuantic.Core.CQS.Resilience;
 

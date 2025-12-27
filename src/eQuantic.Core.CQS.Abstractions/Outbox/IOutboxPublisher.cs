@@ -1,19 +1,18 @@
-using eQuantic.Core.CQS.Abstractions.Outbox;
-
-namespace eQuantic.Core.CQS.Azure.Outbox;
+namespace eQuantic.Core.CQS.Abstractions.Outbox;
 
 /// <summary>
-/// Publishes outbox messages to Azure Service Bus
+/// Publishes outbox messages to an external message broker.
+/// Implements ISP - focused interface for publishing only.
 /// </summary>
 public interface IOutboxPublisher
 {
     /// <summary>
-    /// Publishes a single message to the message bus
+    /// Publishes a single message.
     /// </summary>
     Task PublishAsync(IOutboxMessage message, CancellationToken ct = default);
-
+    
     /// <summary>
-    /// Publishes a batch of messages to the message bus
+    /// Publishes multiple messages in a batch.
     /// </summary>
     Task PublishBatchAsync(IEnumerable<IOutboxMessage> messages, CancellationToken ct = default);
 }

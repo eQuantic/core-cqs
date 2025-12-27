@@ -1,5 +1,6 @@
 using Amazon.SQS;
 using eQuantic.Core.CQS.Abstractions.Options;
+using eQuantic.Core.CQS.Abstractions.Outbox;
 using eQuantic.Core.CQS.AWS.Options;
 using eQuantic.Core.CQS.AWS.Outbox;
 using Microsoft.Extensions.DependencyInjection;

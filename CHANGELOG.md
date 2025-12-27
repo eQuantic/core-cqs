@@ -9,6 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### New Packages
+
+- **`eQuantic.Core.CQS.OpenTelemetry`** - OpenTelemetry integration for distributed tracing:
+
+  - `ICqsTelemetry` abstraction with `NullCqsTelemetry` null object pattern
+  - `TracingCommandHandlerDecorator` - traces command execution
+  - `TracingQueryHandlerDecorator` - traces query execution
+  - `TracingSagaRepositoryDecorator` - traces saga operations
+  - `TracingOutboxPublisherDecorator` - traces outbox publishing
+  - Fluent configuration via `UseOpenTelemetry()`
+
+- **`eQuantic.Core.CQS.Resilience`** - Saga timeout and compensation handling:
+  - `ISagaTimeoutPolicy` / `DefaultSagaTimeoutPolicy`
+  - `ICompensationHandler<T>` with delegate-based and class-based options
+  - `IDeadLetterHandler` / `LoggingDeadLetterHandler`
+  - `SagaTimeoutBackgroundService` - monitors and handles saga timeouts
+  - Fluent configuration via `UseResilience()`, `WithCompensation<>()`, `WithDeadLetterHandler<>()`
+
+#### Abstractions
+
+- Added `ICqsTelemetry` interface for telemetry abstraction
+- Added `IResilientSagaData` interface for sagas with timeout/retry support
+- Added `ISagaTimeoutPolicy`, `ICompensationHandler<T>`, `IDeadLetterHandler` interfaces
+- Added `IOutboxPublisher` interface (consolidated from Azure/AWS)
+
 #### Documentation
 
 - Added individual `README.md` for each NuGet package with installation instructions, configuration examples, and usage documentation:
@@ -20,26 +45,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `eQuantic.Core.CQS.Azure`
   - `eQuantic.Core.CQS.AWS`
   - `eQuantic.Core.CQS.Generators`
+  - `eQuantic.Core.CQS.OpenTelemetry`
+  - `eQuantic.Core.CQS.Resilience`
 
 #### Test Coverage
 
 - Added comprehensive test projects for all providers:
-  - `eQuantic.Core.CQS.Tests.Commons` - Shared test utilities including `DockerAvailableFactAttribute`, `TestSagaData`, and `TestOutboxMessage`
-  - `eQuantic.Core.CQS.Redis.Tests` - 11 integration tests using Testcontainers
-  - `eQuantic.Core.CQS.MongoDb.Tests` - 6 integration tests using Testcontainers
-  - `eQuantic.Core.CQS.PostgreSql.Tests` - 6 integration tests using Testcontainers
-  - `eQuantic.Core.CQS.EntityFramework.Tests` - 6 tests using SQLite in-memory
-  - `eQuantic.Core.CQS.Azure.Tests` - 4 unit tests with NSubstitute mocks
-  - `eQuantic.Core.CQS.AWS.Tests` - 6 unit tests with NSubstitute mocks
+  - `eQuantic.Core.CQS.Tests.Commons` - Shared test utilities
+  - `eQuantic.Core.CQS.Redis.Tests` - 11 integration tests
+  - `eQuantic.Core.CQS.MongoDb.Tests` - 6 integration tests
+  - `eQuantic.Core.CQS.PostgreSql.Tests` - 6 integration tests
+  - `eQuantic.Core.CQS.EntityFramework.Tests` - 6 tests
+  - `eQuantic.Core.CQS.Azure.Tests` - 4 unit tests
+  - `eQuantic.Core.CQS.AWS.Tests` - 6 unit tests
 
 ### Fixed
 
-- **MongoDbSagaRepository**: Added try-catch block for `CreateIndex` to handle cases where `SagaId` is mapped as `_id` via `[BsonId]` attribute (prevents `Command createIndexes failed` error)
+- **MongoDbSagaRepository**: Added try-catch for `CreateIndex` to handle `[BsonId]` mapped SagaId
 
 ### Changed
 
-- Updated all `.csproj` files to include `PackageReadmeFile` property for NuGet package documentation
-- Configured conditional package versions for `Microsoft.Extensions.DependencyInjection.Abstractions` across different target frameworks
+- Consolidated `IOutboxPublisher` interface - moved from Azure/AWS to Abstractions
+- Updated all `.csproj` files to include `PackageReadmeFile` property
 
 ## [1.0.0] - Initial Release
 

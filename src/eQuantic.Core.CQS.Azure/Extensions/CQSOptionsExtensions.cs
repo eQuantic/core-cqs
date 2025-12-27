@@ -1,5 +1,6 @@
 using Azure.Messaging.ServiceBus;
 using eQuantic.Core.CQS.Abstractions.Options;
+using eQuantic.Core.CQS.Abstractions.Outbox;
 using eQuantic.Core.CQS.Azure.Options;
 using eQuantic.Core.CQS.Azure.Outbox;
 using Microsoft.Extensions.DependencyInjection;
