@@ -98,8 +98,13 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "v${{ needs.build.outputs.nuGetVersion }}" -m "Release v${{ needs.build.outputs.nuGetVersion }}"
-          git push origin "v${{ needs.build.outputs.nuGetVersion }}"
+          TAG_NAME="v${{ needs.build.outputs.nuGetVersion }}"
+          if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+            echo "Tag $TAG_NAME already exists, skipping creation"
+          else
+            git tag -a "$TAG_NAME" -m "Release $TAG_NAME"
+            git push origin "$TAG_NAME"
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
