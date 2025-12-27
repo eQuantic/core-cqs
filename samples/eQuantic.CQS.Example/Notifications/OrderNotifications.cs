@@ -9,12 +9,26 @@ namespace eQuantic.CQS.Example.Notifications;
 /// <summary>
 /// Notification when an order is placed
 /// </summary>
-public record OrderPlacedNotification(Guid OrderId, string CustomerName, decimal Total) : INotification;
+public class OrderPlacedNotification : NotificationBase
+{
+    public Guid OrderId { get; }
+    public string CustomerName { get; }
+    public decimal Total { get; }
+    public OrderPlacedNotification(Guid orderId, string customerName, decimal total) 
+        => (OrderId, CustomerName, Total) = (orderId, customerName, total);
+}
 
 /// <summary>
 /// Notification when a product is low on stock
 /// </summary>
-public record LowStockNotification(int ProductId, string ProductName, int CurrentStock) : INotification;
+public class LowStockNotification : NotificationBase
+{
+    public int ProductId { get; }
+    public string ProductName { get; }
+    public int CurrentStock { get; }
+    public LowStockNotification(int productId, string productName, int currentStock)
+        => (ProductId, ProductName, CurrentStock) = (productId, productName, currentStock);
+}
 
 // ============================================================
 // NOTIFICATION HANDLERS - Multiple handlers per notification

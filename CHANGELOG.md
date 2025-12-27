@@ -53,6 +53,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Message properties with saga metadata
   - Fluent configuration via `UseServiceBusDeadLetter()`
 
+#### Core.Eventing Integration
+
+- **`INotification` now extends `IEvent`** from `eQuantic.Core.Eventing`
+- Added `NotificationBase` class for easy notification implementation
+- Updated dependency to `eQuantic.Core.Eventing` 1.8.1
+- Enables ecosystem-wide event handling and interoperability
+
 #### Abstractions
 
 - Added `ICqsTelemetry` interface for telemetry abstraction

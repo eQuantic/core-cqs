@@ -17,7 +17,12 @@ namespace eQuantic.Core.CQS.Tests.Integration;
 public record CreateUserCommand(string Name, string Email) : ICommand<Guid>;
 public record GetUserQuery(Guid UserId) : IQuery<UserDto>;
 public record UserDto(Guid Id, string Name, string Email);
-public record UserCreatedNotification(Guid UserId, string Email) : INotification;
+public class UserCreatedNotification : NotificationBase
+{
+    public Guid UserId { get; }
+    public string Email { get; }
+    public UserCreatedNotification(Guid userId, string email) => (UserId, Email) = (userId, email);
+}
 
 public class UserStore
 {

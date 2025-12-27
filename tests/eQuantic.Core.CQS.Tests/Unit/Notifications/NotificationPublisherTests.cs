@@ -10,7 +10,11 @@ namespace eQuantic.Core.CQS.Tests.Unit.Notifications;
 // TEST NOTIFICATIONS & HANDLERS
 // ============================================================
 
-public record TestNotification(string Message) : INotification;
+public class TestNotification : NotificationBase
+{
+    public string Message { get; }
+    public TestNotification(string message) => Message = message;
+}
 
 public class TestNotificationHandler1 : INotificationHandler<TestNotification>
 {

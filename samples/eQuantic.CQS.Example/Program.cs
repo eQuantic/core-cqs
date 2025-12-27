@@ -124,7 +124,7 @@ class Program
         await publisher.Publish(new LowStockNotification(
             1, 
             "Laptop", 
-            CurrentStock: 5));
+            5));
         
         Console.WriteLine();
     }
