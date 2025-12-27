@@ -1,6 +1,11 @@
 mode: Mainline
 tag-prefix: v
 
+# Conventional Commits support
+major-version-bump-message: '\+semver:\s?(breaking|major)'
+minor-version-bump-message: '(feat|feature)(\(.+\))?:'
+patch-version-bump-message: '(fix|bugfix|perf|refactor)(\(.+\))?:'
+
 branches:
   master:
     mode: ContinuousDelivery
