@@ -49,6 +49,14 @@ public static class ServiceCollectionExtensions
             return new NotificationPublisher(sp, externalPublisher);
         });
 
+        // Register HostedService for external subscriber if registered
+        var subscriberDescriptor = services.FirstOrDefault(d => 
+            d.ServiceType == typeof(eQuantic.Core.Eventing.IExternalEventSubscriber));
+        if (subscriberDescriptor != null)
+        {
+            services.AddHostedService<CQSSubscriberHostedService>();
+        }
+
         var assembliesToScan = options.Assemblies.Count > 0 
             ? options.Assemblies.ToArray() 
             : new[] { Assembly.GetCallingAssembly() };

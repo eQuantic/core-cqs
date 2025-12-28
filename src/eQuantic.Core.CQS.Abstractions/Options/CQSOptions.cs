@@ -98,4 +98,32 @@ public class CQSOptions
             _assemblies.Add(entry);
         return this;
     }
+
+    // ============================================================
+    // EXTERNAL EVENT INTEGRATION (Fluent)
+    // ============================================================
+
+    /// <summary>
+    /// Configures external event publishing using the specified publisher.
+    /// Events will be published to external message brokers (Azure, AWS, RabbitMQ, Kafka, etc.)
+    /// </summary>
+    /// <typeparam name="TPublisher">The external publisher type.</typeparam>
+    public CQSOptions UseExternalPublisher<TPublisher>()
+        where TPublisher : class, eQuantic.Core.Eventing.IExternalEventPublisher
+    {
+        Services.AddSingleton<eQuantic.Core.Eventing.IExternalEventPublisher, TPublisher>();
+        return this;
+    }
+
+    /// <summary>
+    /// Configures external event subscription using the specified subscriber.
+    /// Events from external message brokers will be dispatched to local notification handlers.
+    /// </summary>
+    /// <typeparam name="TSubscriber">The external subscriber type.</typeparam>
+    public CQSOptions UseExternalSubscriber<TSubscriber>()
+        where TSubscriber : class, eQuantic.Core.Eventing.IExternalEventSubscriber
+    {
+        Services.AddSingleton<eQuantic.Core.Eventing.IExternalEventSubscriber, TSubscriber>();
+        return this;
+    }
 }
