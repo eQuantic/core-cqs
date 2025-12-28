@@ -41,7 +41,13 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton(options);
         services.TryAddScoped<IMediator, Mediator>();
-        services.TryAddScoped<INotificationPublisher, NotificationPublisher>();
+        
+        // Register NotificationPublisher with factory to support optional IExternalEventPublisher
+        services.TryAddScoped<INotificationPublisher>(sp =>
+        {
+            var externalPublisher = sp.GetService<eQuantic.Core.Eventing.IExternalEventPublisher>();
+            return new NotificationPublisher(sp, externalPublisher);
+        });
 
         var assembliesToScan = options.Assemblies.Count > 0 
             ? options.Assemblies.ToArray() 
