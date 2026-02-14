@@ -47,7 +47,7 @@ public class RedisSagaRepository<TData>(IConnectionMultiplexer redis, RedisOptio
         var ids = await _db.SetMembersAsync(IndexKey);
         var result = new List<TData>();
         foreach (var id in ids)
-            if (Guid.TryParse(id, out var guid) && await Load(guid, ct) is { } saga)
+            if (Guid.TryParse(id.ToString(), out var guid) && await Load(guid, ct) is { } saga)
                 result.Add(saga);
         return result;
     }

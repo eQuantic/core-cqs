@@ -32,6 +32,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{85237D52-9
 		LICENSE = LICENSE
 		README.md = README.md
 		GitVersion.yml = GitVersion.yml
+		.gitignore = .gitignore
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eQuantic.Core.CQS.Azure", "src\eQuantic.Core.CQS.Azure\eQuantic.Core.CQS.Azure.csproj", "{50FCE47E-25EC-45CF-B33E-CFAEC279D18E}"

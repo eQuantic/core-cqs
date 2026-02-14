@@ -28,7 +28,7 @@ public class RedisOutboxRepository(IConnectionMultiplexer redis, RedisOptions op
         var ids = await _db.SortedSetRangeByRankAsync(PendingKey, 0, batchSize - 1);
         var result = new List<IOutboxMessage>();
         foreach (var id in ids)
-            if (Guid.TryParse(id, out var guid) && await LoadMessage(guid) is { } msg)
+            if (Guid.TryParse(id.ToString(), out var guid) && await LoadMessage(guid) is { } msg)
                 result.Add(msg);
         return result;
     }
