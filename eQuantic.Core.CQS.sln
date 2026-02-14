@@ -71,6 +71,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eQuantic.Core.CQS.Resilienc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eQuantic.Core.CQS.Resilience.ServiceBus", "src\eQuantic.Core.CQS.Resilience.ServiceBus\eQuantic.Core.CQS.Resilience.ServiceBus.csproj", "{7F8A7667-48E2-4059-A0D7-78A2B53D8F8E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{08DA9936-383F-4A70-A7FB-8E87F85759E5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{9D3734AE-B1DC-426F-BD80-F0E5F96A561D}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\ci.yml = .github\workflows\ci.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -437,6 +444,8 @@ Global
 		{C92938A8-1244-428B-A991-E77771B6B9B0} = {C19C2043-43B7-4A6B-A902-E7359700ABC4}
 		{E5EE7203-3750-498E-A6D3-9F37EA76CFDA} = {C19C2043-43B7-4A6B-A902-E7359700ABC4}
 		{7F8A7667-48E2-4059-A0D7-78A2B53D8F8E} = {C19C2043-43B7-4A6B-A902-E7359700ABC4}
+		{08DA9936-383F-4A70-A7FB-8E87F85759E5} = {85237D52-93F6-47F1-BD5F-BBE26858D38A}
+		{9D3734AE-B1DC-426F-BD80-F0E5F96A561D} = {08DA9936-383F-4A70-A7FB-8E87F85759E5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B68343BD-0CC7-4F34-90B7-74E240CA9D1E}
