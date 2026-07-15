@@ -23,7 +23,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Datadog.Trace" Version="3.37.0" />
+    <PackageReference Include="Datadog.Trace" Version="3.43.0" />
   </ItemGroup>
 
   <ItemGroup>
