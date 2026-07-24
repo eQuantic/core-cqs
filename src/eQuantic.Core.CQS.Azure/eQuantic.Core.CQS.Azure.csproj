@@ -25,7 +25,6 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
 
         <!-- Build -->
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageOutputPath>../../artifacts/</PackageOutputPath>
 
         <!-- Source Link -->

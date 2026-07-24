@@ -18,7 +18,6 @@
     <Copyright>Copyright © eQuantic Tech 2025</Copyright>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>Icon.png</PackageIcon>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>../../artifacts</PackageOutputPath>
   </PropertyGroup>
 

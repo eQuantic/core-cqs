@@ -1,0 +1,11 @@
+<Project>
+
+    <!-- Single source of version for the whole eQuantic.Core.CQS family. semantic-release computes the next
+         value from the commit history, stamps it here (.github/scripts/release-prepare.sh) and commits it back
+         with [skip ci]. Every src/** package inherits it, so the family versions together — matching how the
+         packages are already published (all at the same version on NuGet). -->
+    <PropertyGroup>
+        <Version>2.4.0</Version>
+    </PropertyGroup>
+
+</Project>
