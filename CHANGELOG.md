@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.5.0](https://github.com/eQuantic/core-cqs/compare/v2.4.0...v2.5.0) (2026-07-24)
+
+### Features
+
+* **data:** native eQuantic.Core.Data outbox adapter ([ccec351](https://github.com/eQuantic/core-cqs/commit/ccec3517ce2994db148fb1440bcde422e37685f5))
+
+### Bug Fixes
+
+* **tests:** guard the remaining fixture entry points ([cc9c798](https://github.com/eQuantic/core-cqs/commit/cc9c7984fb4d6c458266680adc682c0fe859cdae))
+* **tests:** let container fixtures stand down when Docker is absent ([b62aa30](https://github.com/eQuantic/core-cqs/commit/b62aa30e2bf6b0c688274375e47eabb3137b701e))
+* **tests:** require a Linux-container daemon before starting fixtures ([ca08d71](https://github.com/eQuantic/core-cqs/commit/ca08d71990cec932e3af6b117172db2b3610526e))
+* **tests:** stop the Docker probe from outlasting its own timeout ([7878e32](https://github.com/eQuantic/core-cqs/commit/7878e32699b38dcb17f2f52c92214e3a59e7d844))
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
