@@ -40,6 +40,13 @@ public class RedisContainerFixture : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
+        // nothing was started, so there is no connection to close — reaching for one here would fail
+        // the collection's cleanup even though every test in it was skipped
+        if (!DockerEnvironment.IsAvailable)
+        {
+            return;
+        }
+
         await Connection.DisposeAsync();
         await _container.DisposeAsync();
     }

@@ -37,7 +37,14 @@ public class MongoContainerFixture : IAsyncLifetime
             BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
             _serialzersRegistered = true;
         }
-        
+
+        // the collection fixture initializes even when every test in it is skipped, so without
+        // Docker this would wait on a container that can never start
+        if (!DockerEnvironment.IsAvailable)
+        {
+            return;
+        }
+
         // A bounded wait: whatever keeps a container from coming up, the suite reports it instead of
         // stalling the run until the agent's own timeout kills it.
         using var timeout = new CancellationTokenSource(TimeSpan.FromMinutes(3));
