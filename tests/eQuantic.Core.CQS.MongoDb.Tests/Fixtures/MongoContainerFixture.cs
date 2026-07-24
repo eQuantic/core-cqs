@@ -4,6 +4,7 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using Testcontainers.MongoDb;
+using eQuantic.Core.CQS.Tests.Commons.Fixtures;
 using Xunit;
 
 namespace eQuantic.Core.CQS.MongoDb.Tests.Fixtures;
@@ -51,6 +52,11 @@ public class MongoContainerFixture : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
+        if (!DockerEnvironment.IsAvailable)
+        {
+            return;
+        }
+
         await _container.DisposeAsync();
     }
 }

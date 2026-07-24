@@ -1,5 +1,6 @@
 using DotNet.Testcontainers.Builders;
 using Testcontainers.PostgreSql;
+using eQuantic.Core.CQS.Tests.Commons.Fixtures;
 using Xunit;
 
 namespace eQuantic.Core.CQS.PostgreSql.Tests.Fixtures;
@@ -26,11 +27,23 @@ public class PostgreSqlContainerFixture : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
+        // the collection fixture initializes even when every test in it is skipped, so without
+        // Docker this would hang waiting for a container that can never start
+        if (!DockerEnvironment.IsAvailable)
+        {
+            return;
+        }
+
         await _container.StartAsync();
     }
 
     public async Task DisposeAsync()
     {
+        if (!DockerEnvironment.IsAvailable)
+        {
+            return;
+        }
+
         await _container.DisposeAsync();
     }
 }
