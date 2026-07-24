@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <AssemblyName>eQuantic.Core.CQS.Data</AssemblyName>
+    <RootNamespace>eQuantic.Core.CQS.Data</RootNamespace>
+
+    <PackageId>eQuantic.Core.CQS.Data</PackageId>
+    <Authors>eQuantic Tech</Authors>
+    <Company>eQuantic Tech</Company>
+    <Copyright>Copyright © eQuantic Tech 2019-2025</Copyright>
+    <Description>eQuantic.Core.Data (native, no-ORM) implementations for eQuantic.Core.CQS — an Outbox repository that stages on the same native unit of work as your aggregate writes, so message and aggregate commit in one transaction across any supported store (PostgreSQL, MySQL, SQL Server, MongoDB, Cosmos DB, Cassandra).</Description>
+    <PackageTags>cqs;cqrs;outbox;saga;transactional-outbox;core-data;clean-architecture</PackageTags>
+    <PackageProjectUrl>https://github.com/eQuantic/core-cqs</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/eQuantic/core-cqs</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageOutputPath>../../artifacts/</PackageOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\eQuantic.Core.CQS.Abstractions\eQuantic.Core.CQS.Abstractions.csproj" />
+    <!-- Native persistence contracts (IAsyncRepository, IUnitOfWork, QueryOptions) + IEntity via DataModel. -->
+    <PackageReference Include="eQuantic.Core.Data" Version="6.4.0" />
+  </ItemGroup>
+
+</Project>
