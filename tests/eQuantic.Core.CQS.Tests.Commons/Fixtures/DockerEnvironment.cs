@@ -38,13 +38,17 @@ public static class DockerEnvironment
             };
 
             process.Start();
-            var osType = process.StandardOutput.ReadToEnd().Trim();
+
+            // Wait first, read after: reading the pipe before the process exits blocks until the
+            // stream closes, which would outlast the timeout on an unresponsive daemon. The output
+            // here is a single word, far below the pipe buffer, so it is already waiting for us.
             if (!process.WaitForExit(5000))
             {
                 process.Kill(entireProcessTree: true);
                 return false;
             }
 
+            var osType = process.StandardOutput.ReadToEnd().Trim();
             return process.ExitCode == 0
                 && osType.Equals("linux", StringComparison.OrdinalIgnoreCase);
         }

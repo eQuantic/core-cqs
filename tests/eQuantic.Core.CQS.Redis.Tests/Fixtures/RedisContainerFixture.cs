@@ -31,7 +31,10 @@ public class RedisContainerFixture : IAsyncLifetime
             return;
         }
 
-        await _container.StartAsync();
+        // A bounded wait: whatever keeps a container from coming up, the suite reports it instead of
+        // stalling the run until the agent's own timeout kills it.
+        using var timeout = new CancellationTokenSource(TimeSpan.FromMinutes(3));
+        await _container.StartAsync(timeout.Token);
         Connection = await ConnectionMultiplexer.ConnectAsync(ConnectionString);
     }
 
