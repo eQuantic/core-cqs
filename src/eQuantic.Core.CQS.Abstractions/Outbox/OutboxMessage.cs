@@ -13,5 +13,7 @@ public sealed class OutboxMessage : IOutboxMessage
     public DateTime? ProcessedAt { get; set; }
     public int Attempts { get; set; }
     public string? LastError { get; set; }
+    public DateTime? NextAttemptAt { get; set; }
     public string? CorrelationId { get; init; }
+    public string? Context { get; init; }
 }

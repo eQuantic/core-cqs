@@ -14,6 +14,7 @@ namespace eQuantic.Core.CQS.Data.Outbox;
 /// The relay-side operations (<see cref="GetPending" />, <see cref="MarkProcessed" />, <see cref="MarkFailed" />,
 /// <see cref="CleanupProcessed" />) run on their own and take effect immediately: the mark operations are
 /// server-side set-based updates and the cleanup is a set-based delete — no row is loaded to change its state.
+/// (<see cref="MarkFailed" /> is the one exception, and says why.)
 /// </para>
 /// </summary>
 public sealed class NativeOutboxRepository : IOutboxRepository
@@ -40,15 +41,24 @@ public sealed class NativeOutboxRepository : IOutboxRepository
             ProcessedAt = message.ProcessedAt,
             Attempts = message.Attempts,
             LastError = message.LastError,
+            NextAttemptAt = message.NextAttemptAt,
             CorrelationId = message.CorrelationId,
+            Context = message.Context,
         }, cancellationToken);
 
     /// <inheritdoc />
+    /// <remarks>
+    /// At-least-once: <see cref="IAsyncRepository{TEntity,TKey}" /> is store-agnostic and offers no way to claim a
+    /// bounded batch under a lock, so two relays reading at once would receive the same messages — run a single
+    /// relay instance. On PostgreSQL, <c>PostgreSqlOutboxRepository</c> claims its batch atomically instead.
+    /// </remarks>
     public async Task<IReadOnlyList<IOutboxMessage>> GetPending(int batchSize = 100, CancellationToken cancellationToken = default)
     {
         var pending = (int)OutboxMessageState.Pending;
+        var now = DateTime.UtcNow;
         var options = new QueryOptions<OutboxDataEntity>()
-            .Where(message => message.State == pending)
+            .Where(message => message.State == pending &&
+                              (message.NextAttemptAt == null || message.NextAttemptAt <= now))
             .OrderBy(message => message.CreatedAt);
 
         var page = await _repository.GetPagedAsync(new PageRequest(1, batchSize), options, cancellationToken)
@@ -63,21 +73,47 @@ public sealed class NativeOutboxRepository : IOutboxRepository
         var processedAt = DateTime.UtcNow;
         return _repository.UpdateManyAsync(
             message => message.Id == messageId,
-            message => new OutboxDataEntity { State = (int)OutboxMessageState.Processed, ProcessedAt = processedAt },
+            message => new OutboxDataEntity
+            {
+                State = (int)OutboxMessageState.Processed,
+                ProcessedAt = processedAt,
+                NextAttemptAt = null,
+            },
             cancellationToken);
     }
 
     /// <inheritdoc />
-    public Task MarkFailed(Guid messageId, string error, CancellationToken cancellationToken = default) =>
-        _repository.UpdateManyAsync(
-            message => message.Id == messageId,
-            message => new OutboxDataEntity
+    /// <remarks>
+    /// Reads the message before updating it — the only relay-side operation that does. Both the new state and the
+    /// next attempt hang on the attempt count, and <c>backoff * attempts</c> is arithmetic no store-agnostic update
+    /// expression can carry, so the count is read once and the update is written with settled values.
+    /// </remarks>
+    public async Task MarkFailed(
+        Guid messageId,
+        string error,
+        int maxAttempts,
+        TimeSpan backoff,
+        CancellationToken cancellationToken = default)
+    {
+        var message = await _repository.GetAsync(messageId, cancellationToken: cancellationToken).ConfigureAwait(false);
+        if (message is null) return;
+
+        var attempts = message.Attempts + 1;
+        var exhausted = attempts >= maxAttempts;
+        var state = (int)(exhausted ? OutboxMessageState.Failed : OutboxMessageState.Pending);
+        var nextAttemptAt = exhausted ? (DateTime?)null : DateTime.UtcNow + backoff * attempts;
+
+        await _repository.UpdateManyAsync(
+            entity => entity.Id == messageId,
+            entity => new OutboxDataEntity
             {
-                State = (int)OutboxMessageState.Failed,
-                Attempts = message.Attempts + 1,
+                State = state,
+                Attempts = attempts,
                 LastError = error,
+                NextAttemptAt = nextAttemptAt,
             },
-            cancellationToken);
+            cancellationToken).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public Task CleanupProcessed(TimeSpan olderThan, CancellationToken cancellationToken = default)
@@ -99,6 +135,8 @@ public sealed class NativeOutboxRepository : IOutboxRepository
         ProcessedAt = entity.ProcessedAt,
         Attempts = entity.Attempts,
         LastError = entity.LastError,
+        NextAttemptAt = entity.NextAttemptAt,
         CorrelationId = entity.CorrelationId,
+        Context = entity.Context,
     };
 }

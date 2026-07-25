@@ -30,8 +30,9 @@ public static class ModelBuilderExtensions
         {
             entity.ToTable($"{prefix}OutboxMessages", schema);
             entity.HasKey(e => e.Id);
-            entity.HasIndex(e => new { e.State, e.CreatedAt });
+            entity.HasIndex(e => new { e.State, e.NextAttemptAt, e.CreatedAt });
             entity.Property(e => e.Payload).HasColumnType("text");
+            entity.Property(e => e.Context).HasColumnType("text");
         });
 
         modelBuilder.Entity<ScheduledJobEntity>(entity =>
