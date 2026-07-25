@@ -15,5 +15,7 @@ public class TestOutboxMessage : IOutboxMessage
     public DateTime? ProcessedAt { get; set; }
     public int Attempts { get; set; }
     public string? LastError { get; set; }
+    public DateTime? NextAttemptAt { get; set; }
     public string? CorrelationId { get; set; }
+    public string? Context { get; set; }
 }

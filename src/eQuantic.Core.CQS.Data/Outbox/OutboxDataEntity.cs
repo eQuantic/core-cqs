@@ -34,8 +34,14 @@ public sealed class OutboxDataEntity : IEntity<Guid>
     /// <summary>The last error, if the message failed.</summary>
     public string? LastError { get; set; }
 
+    /// <summary>When the message becomes deliverable again after a failed attempt (UTC); null means immediately.</summary>
+    public DateTime? NextAttemptAt { get; set; }
+
     /// <summary>A correlation identifier for tracing.</summary>
     public string? CorrelationId { get; set; }
+
+    /// <summary>The ambient context captured when the message was enqueued (JSON by convention).</summary>
+    public string? Context { get; set; }
 
     /// <inheritdoc />
     public Guid GetKey() => Id;

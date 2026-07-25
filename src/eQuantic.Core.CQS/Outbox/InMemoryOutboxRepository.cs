@@ -16,10 +16,14 @@ public class InMemoryOutboxRepository : IOutboxRepository
         return Task.CompletedTask;
     }
 
+    /// <inheritdoc />
+    /// <remarks>At-least-once: the in-memory store cannot lock, so run a single relay.</remarks>
     public Task<IReadOnlyList<IOutboxMessage>> GetPending(int batchSize = 100, CancellationToken cancellationToken = default)
     {
+        var now = DateTime.UtcNow;
         var pending = _messages.Values
             .Where(m => m.State == OutboxMessageState.Pending)
+            .Where(m => m.NextAttemptAt is null || m.NextAttemptAt <= now)
             .OrderBy(m => m.CreatedAt)
             .Take(batchSize)
             .ToList();
@@ -37,14 +41,23 @@ public class InMemoryOutboxRepository : IOutboxRepository
         return Task.CompletedTask;
     }
 
-    public Task MarkFailed(Guid messageId, string error, CancellationToken cancellationToken = default)
+    public Task MarkFailed(
+        Guid messageId,
+        string error,
+        int maxAttempts,
+        TimeSpan backoff,
+        CancellationToken cancellationToken = default)
     {
         if (_messages.TryGetValue(messageId, out var message))
         {
-            message.State = OutboxMessageState.Failed;
-            message.LastError = error;
             message.Attempts++;
+            message.LastError = error;
+
+            var exhausted = message.Attempts >= maxAttempts;
+            message.State = exhausted ? OutboxMessageState.Failed : OutboxMessageState.Pending;
+            message.NextAttemptAt = exhausted ? null : DateTime.UtcNow + backoff * message.Attempts;
         }
+
         return Task.CompletedTask;
     }
 

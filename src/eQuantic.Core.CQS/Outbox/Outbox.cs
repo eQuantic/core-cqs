@@ -15,13 +15,18 @@ public class Outbox : IOutbox
         _repository = repository;
     }
 
-    public async Task Enqueue<T>(T message, string? correlationId = null, CancellationToken cancellationToken = default) where T : notnull
+    public async Task Enqueue<T>(
+        T message,
+        string? correlationId = null,
+        string? context = null,
+        CancellationToken cancellationToken = default) where T : notnull
     {
         var outboxMessage = new OutboxMessage
         {
             MessageType = typeof(T).AssemblyQualifiedName ?? typeof(T).FullName ?? typeof(T).Name,
             Payload = JsonSerializer.Serialize(message),
-            CorrelationId = correlationId
+            CorrelationId = correlationId,
+            Context = context
         };
 
         await _repository.Add(outboxMessage, cancellationToken).ConfigureAwait(false);

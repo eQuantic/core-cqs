@@ -1,3 +1,4 @@
+using System.Text.Json;
 using eQuantic.Core.CQS.Abstractions.Outbox;
 using eQuantic.Core.CQS.Redis.Options;
 using eQuantic.Core.CQS.Redis.Outbox;
@@ -102,22 +103,90 @@ public class RedisOutboxRepositoryTests
     }
 
     [DockerAvailableFact]
-    public async Task MarkFailed_ShouldUpdateStateAndIncrementAttempts()
+    public async Task MarkFailed_WithAttemptsRemaining_ShouldHoldMessageBackUntilBackoffElapses()
     {
         // Arrange
         var message = CreateTestMessage();
         await _repository.Add(message);
 
         // Act
-        await _repository.MarkFailed(message.Id, "Connection timeout");
-        await _repository.MarkFailed(message.Id, "Connection timeout again");
+        await _repository.MarkFailed(message.Id, "Connection timeout", maxAttempts: 3, backoff: TimeSpan.FromMinutes(5));
+
+        // Assert — still pending, but not yet due
+        var pending = await _repository.GetPending(10);
+        pending.Should().NotContain(m => m.Id == message.Id);
+
+        var stored = await LoadStored(message.Id);
+        stored!.State.Should().Be(OutboxMessageState.Pending);
+        stored.Attempts.Should().Be(1);
+        stored.LastError.Should().Be("Connection timeout");
+        stored.NextAttemptAt.Should().NotBeNull().And.BeAfter(DateTime.UtcNow);
+    }
+
+    [DockerAvailableFact]
+    public async Task MarkFailed_WithElapsedBackoff_ShouldOfferMessageAgain()
+    {
+        // Arrange
+        var message = CreateTestMessage();
+        await _repository.Add(message);
+
+        // Act
+        await _repository.MarkFailed(message.Id, "Connection timeout", maxAttempts: 3, backoff: TimeSpan.Zero);
 
         // Assert
         var pending = await _repository.GetPending(10);
-        var failedMsg = pending.Should().ContainSingle(m => m.Id == message.Id).Subject;
-        failedMsg.State.Should().Be(OutboxMessageState.Failed);
-        failedMsg.LastError.Should().Be("Connection timeout again");
-        failedMsg.Attempts.Should().Be(2);
+        var retried = pending.Should().ContainSingle(m => m.Id == message.Id).Subject;
+        retried.State.Should().Be(OutboxMessageState.Pending);
+        retried.Attempts.Should().Be(1);
+        retried.LastError.Should().Be("Connection timeout");
+    }
+
+    [DockerAvailableFact]
+    public async Task MarkFailed_WithAttemptsExhausted_ShouldDeadLetterMessage()
+    {
+        // Arrange
+        var message = CreateTestMessage();
+        await _repository.Add(message);
+
+        // Act
+        await _repository.MarkFailed(message.Id, "Connection timeout", maxAttempts: 2, backoff: TimeSpan.Zero);
+        await _repository.MarkFailed(message.Id, "Connection timeout again", maxAttempts: 2, backoff: TimeSpan.Zero);
+
+        // Assert — off the queue, kept for inspection
+        var pending = await _repository.GetPending(10);
+        pending.Should().NotContain(m => m.Id == message.Id);
+
+        var stored = await LoadStored(message.Id);
+        stored!.State.Should().Be(OutboxMessageState.Failed);
+        stored.LastError.Should().Be("Connection timeout again");
+        stored.Attempts.Should().Be(2);
+        stored.NextAttemptAt.Should().BeNull();
+    }
+
+    [DockerAvailableFact]
+    public async Task GetPending_ShouldNotHandTheSameMessageToASecondRelay()
+    {
+        // Arrange
+        var message = CreateTestMessage();
+        await _repository.Add(message);
+
+        // Act — the claim leases the message, so a concurrent relay comes away empty
+        var first = await _repository.GetPending(10);
+        var second = await _repository.GetPending(10);
+
+        // Assert
+        first.Should().ContainSingle(m => m.Id == message.Id);
+        second.Should().BeEmpty();
+    }
+
+    private async Task<OutboxMessage?> LoadStored(Guid id)
+    {
+        var json = await _fixture.Connection.GetDatabase(_options.Database)
+            .StringGetAsync($"{_options.KeyPrefix}outbox:{id}");
+        return json.IsNullOrEmpty
+            ? null
+            : JsonSerializer.Deserialize<OutboxMessage>(json.ToString(),
+                new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
     }
 
     private static TestOutboxMessage CreateTestMessage() => new()
