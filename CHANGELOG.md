@@ -1,5 +1,21 @@
 # Changelog
 
+## [3.0.0](https://github.com/eQuantic/core-cqs/compare/v2.5.0...v3.0.0) (2026-07-25)
+
+### ⚠ BREAKING CHANGES
+
+* **outbox:** `IOutboxRepository.MarkFailed` takes `maxAttempts` and
+`backoff`; `IOutbox.Enqueue` takes an optional `context` ahead of the
+cancellation token; `IOutboxMessage` gains `NextAttemptAt` and `Context`.
+Custom implementations of either interface must be updated. Existing data
+survives: the PostgreSQL table picks up its two columns through `ADD COLUMN
+IF NOT EXISTS`, while EF Core deployments need a migration for the new
+`NextAttemptAt`/`Context` properties and the widened outbox index.
+
+### Features
+
+* **outbox:** carry context, retry with backoff and claim under lock ([319abb9](https://github.com/eQuantic/core-cqs/commit/319abb920e7f31355e0be4547884f6a0ba04de8a))
+
 ## [2.5.0](https://github.com/eQuantic/core-cqs/compare/v2.4.0...v2.5.0) (2026-07-24)
 
 ### Features
